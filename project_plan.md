@@ -34,11 +34,11 @@ What datasets are you sourcing from? How frequently are the source datasets upda
 
 Example:
 
-| Source name | Source type | Source documentation | Link |
+| Source name | Source type | Refresh Cadence | Link |
 | - | - | - |- |
-| Customers database | PostgreSQL database | - | - |
-| Market Stack  | REST API | Daily |- |
-| Fixer API  | REST API | Hourly |- |
+| Trader database | PostgreSQL database | - | - |
+| Market Stack  | REST API | Daily | https://marketstack.com/ |
+| Fixer API  | REST API | Hourly | https://fixer.io/ |
 
 ## Solution architecture
 
