@@ -8,8 +8,6 @@ Example:
 
 > The objective of our project is to provide analytical datasets from our Market Stack API and Fixer for currency exchange.
 
-> BBBBBBBBBBBBBBBBBBBBBBBBBBBB
->&&ujdcm. 
 
 ## Consumers
 
@@ -27,6 +25,7 @@ Example:
 
 > - What is the price of a stock?
 > - What is the home currency of the stock?
+> - Build Stock profile for Traders in home cuurecy?
 
 
 ## Source datasets
@@ -38,8 +37,8 @@ Example:
 | Source name | Source type | Source documentation |
 | - | - | - |
 | Customers database | PostgreSQL database | - |
-| Market Stack  | REST API | - |
-| Fixer API
+| Market Stack  | REST API | Daily |
+| Fixer API  | REST API | Hourly
 
 ## Solution architecture
 
