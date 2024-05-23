@@ -6,7 +6,7 @@ A short statement about the objective of your project.
 
 Example:
 
-> The objective of our project is to provide analytical datasets from our Orders API and Customers database.
+> The objective of our project is to provide analytical datasets from our Market Stack API and Fixer for currency exchange.
 
 ## Consumers
 
@@ -14,7 +14,7 @@ What users would find your data useful? How do they want to access the data?
 
 Example:
 
-> The users of our datasets are Data Analysts and the Production team in the business.
+> The users of our datasets are Traders from around the work to find stock prices and home currency estimator in the business.
 
 ## Questions
 
