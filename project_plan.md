@@ -42,6 +42,11 @@ Example:
 
 ## Solution architecture
 
+Here is a dummy  solution architecture diagram:
+
+![images/system_design_dummy](images/system_design_dummy.png)
+
+
 How are we going to get data flowing from source to serving? What components and services will we combine to implement the solution? How do we automate the entire running of the solution?
 
 - What data extraction patterns are you going to be using?
@@ -50,16 +55,8 @@ How are we going to get data flowing from source to serving? What components and
 
 We recommend using a diagramming tool like [draw.io](https://draw.io/) to create your architecture diagram.
 
-Here is a sample solution architecture diagram:
 
-![images/sample-solution-architecture-diagram.png](images/sample-solution-architecture-diagram.png)
 
 ## Breakdown of tasks
 
-How is your project broken down? Who is doing what?
-
-We recommend using a free Task board such as [Trello](https://trello.com/). This makes it easy to assign and track tasks to each individual.
-
-Example:
-
-![images/kanban-task-board.png](images/kanban-task-board.png)
+Based on team recommndation, we would use slack for task and communications for intermediate. In case, we need specfic tasks we might think of Trello.
