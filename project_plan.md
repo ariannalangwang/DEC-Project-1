@@ -14,7 +14,7 @@ What users would find your data useful? How do they want to access the data?
 
 Example:
 
-> The users of our datasets are Traders from around the work to find stock prices and home currency estimator in the business.
+> The users of our datasets are Traders from around the world to find stock prices and home currency estimator for the traders.
 
 ## Questions
 
@@ -22,12 +22,9 @@ What questions are you trying to answer with your data? How will your data suppo
 
 Example:
 
-> - How many orders are there for each customer?
-> - What countries and regions have the most orders?
-> - What customers have their orders delayed?
-> - How many delayed orders are there for each country and region?
-> - How many orders do we have for each day?
-> - How many delayed orders do we have for each day?
+> - What is the price of a stock?
+> - What is the home currency of the stock?
+
 
 ## Source datasets
 
@@ -38,7 +35,8 @@ Example:
 | Source name | Source type | Source documentation |
 | - | - | - |
 | Customers database | PostgreSQL database | - |
-| Orders API | REST API | - |
+| Market Stack  | REST API | - |
+| Fixer API
 
 ## Solution architecture
 
