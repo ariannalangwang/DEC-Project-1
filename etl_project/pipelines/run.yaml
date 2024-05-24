@@ -1,0 +1,6 @@
+name: etl_project
+config:
+  log_folder_path: "./etl_project/logs"
+schedule:
+  run_seconds: 5
+  poll_seconds: 2
