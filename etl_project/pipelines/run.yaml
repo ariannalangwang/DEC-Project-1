@@ -1,4 +1,5 @@
-name: etl_project
+raw_pipeline_name: raw_pipeline
+serving_pipeline_name: serving_pipeline
 config:
   log_folder_path: "./etl_project/logs"
 schedule:
