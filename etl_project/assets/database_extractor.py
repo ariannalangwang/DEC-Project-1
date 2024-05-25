@@ -99,10 +99,7 @@ class DatabaseTableExtractor:
         """
         if self.sql_extract_parser.config.extract_type == SqlExtractConfig.FULL_EXTRACT:
             return self._full_extract()
-        elif (
-            self.sql_extract_parser.config.extract_type
-            == SqlExtractConfig.INCREMENTAL_EXTRACT
-        ):
+        elif (self.sql_extract_parser.config.extract_type == SqlExtractConfig.INCREMENTAL_EXTRACT):
             return self._incremental_extract()
         else:
             raise Exception(

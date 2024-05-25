@@ -159,3 +159,6 @@ dmypy.json
 
 # certificates 
 *.cer
+
+# vscode
+.vscode/

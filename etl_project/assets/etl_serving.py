@@ -1,10 +1,11 @@
 from jinja2 import Environment
+from graphlib import TopologicalSorter
+
+from etl_project.connectors.postgresql import PostgreSqlClient
 from etl_project.assets.database_extractor import (
     SqlExtractParser,
     DatabaseTableExtractor,
 )
-from etl_project.connectors.postgresql import PostgreSqlClient
-from graphlib import TopologicalSorter
 
 
 def extract_load(

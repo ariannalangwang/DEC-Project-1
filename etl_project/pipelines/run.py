@@ -2,13 +2,17 @@ from dotenv import load_dotenv
 import os
 import yaml
 from pathlib import Path
-import schedule
 import time
 from sqlalchemy import Table, MetaData, Column, String, Float
+from jinja2 import Environment, FileSystemLoader
+from graphlib import TopologicalSorter
 
 from etl_project.connectors.postgresql import PostgreSqlClient
 from etl_project.connectors.fixer_api import FixerApiClient
 from etl_project.connectors.market_stack_api import MarketStackApiClient
+
+from etl_project.assets.metadata_logging import MetaDataLogging, MetaDataLoggingStatus
+from etl_project.assets.pipeline_logging import PipelineLogging
 
 from etl_project.assets.etl_raw import (
     extract_fixer_table,
@@ -17,8 +21,11 @@ from etl_project.assets.etl_raw import (
     transform_market_stack_table,
     load,
 )
-from etl_project.assets.metadata_logging import MetaDataLogging, MetaDataLoggingStatus
-from etl_project.assets.pipeline_logging import PipelineLogging
+from etl_project.assets.etl_serving import (
+    extract_load,
+    transform,
+    SqlTransform,
+)
 
 
 def load_environment_variables():
@@ -26,7 +33,8 @@ def load_environment_variables():
     required_env_vars = [
         'FIXER_ACCESS_KEY', 'MARKET_STACK_ACCESS_KEY', 
         'SERVER_NAME', 'DATABASE_NAME', 'DB_USERNAME', 'DB_PASSWORD', 'PORT', 
-        'LOGGING_SERVER_NAME', 'LOGGING_DATABASE_NAME', 'LOGGING_USERNAME', 'LOGGING_PASSWORD', 'LOGGING_PORT'
+        'LOGGING_SERVER_NAME', 'LOGGING_DATABASE_NAME', 'LOGGING_USERNAME', 'LOGGING_PASSWORD', 'LOGGING_PORT',
+        'TARGET_SERVER_NAME', 'TARGET_DATABASE_NAME', 'TARGET_DB_USERNAME', 'TARGET_DB_PASSWORD', 'TARGET_PORT'
     ]
     env_vars = {var: os.getenv(var) for var in required_env_vars}
     missing_vars = [var for var, value in env_vars.items() if value is None]
@@ -57,7 +65,15 @@ def setup_clients(env_vars):
         port=env_vars['LOGGING_PORT'],
     )
 
-    return fixer_api_client, market_stack_api_client, postgresql_client, postgresql_logging_client
+    postgresql_target_client = PostgreSqlClient(
+        server_name=env_vars['TARGET_SERVER_NAME'],
+        database_name=env_vars['TARGET_DATABASE_NAME'],
+        username=env_vars['TARGET_DB_USERNAME'],
+        password=env_vars['TARGET_DB_PASSWORD'],
+        port=env_vars['TARGET_PORT'],
+    )
+
+    return fixer_api_client, market_stack_api_client, postgresql_client, postgresql_logging_client, postgresql_target_client
 
 
 def raw_pipeline(
@@ -66,7 +82,7 @@ def raw_pipeline(
         postgresql_client: PostgreSqlClient, 
         pipeline_logging: PipelineLogging
     ):
-    pipeline_logging.logger.info("Starting pipeline run")
+    pipeline_logging.logger.info("Starting raw_pipeline")
 
     # extract
     pipeline_logging.logger.info("Extracting data from Fixer API")
@@ -88,10 +104,10 @@ def raw_pipeline(
         metadata,
         Column("date", String, primary_key=True),
         Column("base", String),
-        Column("rate_USD", Float),
-        Column("rate_CNY", Float),
-        Column("rate_INR", Float),
-        Column("rate_AUD", Float),
+        Column("rate_usd", Float),
+        Column("rate_cny", Float),
+        Column("rate_inr", Float),
+        Column("rate_aud", Float),
     )
     load(
         df=df_currency_transformed,
@@ -121,17 +137,63 @@ def raw_pipeline(
         metadata=metadata,
         load_method="upsert",
     )
-    pipeline_logging.logger.info("Pipeline run successful")
+    pipeline_logging.logger.info("Raw pipeline run successful")
 
 
-def run_raw_pipeline(
+def serving_pipeline(
+        postgresql_client: PostgreSqlClient, 
+        postgresql_target_client: PostgreSqlClient,
+        pipeline_logging: PipelineLogging
+    ):
+    pipeline_logging.logger.info("Starting serving_pipeline")
+
+    # extract and load
+    extract_template_environment = Environment(
+        loader=FileSystemLoader("etl_project/assets/sql/extract")
+    )
+    pipeline_logging.logger.info("Perform extract and load")
+    extract_load(
+        template_environment=extract_template_environment,
+        source_postgresql_client=postgresql_client,
+        target_postgresql_client=postgresql_target_client,
+    )
+
+    # transform
+    transform_template_environment = Environment(
+        loader=FileSystemLoader("etl_project/assets/sql/transform")
+    )
+
+    # create nodes
+    stock_prices_in_currencies = SqlTransform(
+        table_name="stock_prices_in_currencies",
+        postgresql_client=postgresql_target_client,
+        environment=transform_template_environment,
+    )
+    aggregated_stock_profiles = SqlTransform(
+        table_name="aggregated_stock_profiles",
+        postgresql_client=postgresql_target_client,
+        environment=transform_template_environment,
+    )
+
+    # create DAG
+    dag = TopologicalSorter()
+    dag.add(stock_prices_in_currencies)
+    dag.add(aggregated_stock_profiles, stock_prices_in_currencies)
+    # run transform
+    pipeline_logging.logger.info("Perform transform")
+    transform(dag=dag)
+    pipeline_logging.logger.info("Serving pipeline run successful")
+
+
+def run_pipeline(
         pipeline_name: str, 
         pipeline_config: dict, 
         fixer_api_client: FixerApiClient, 
         market_stack_api_client: MarketStackApiClient, 
         postgresql_client: PostgreSqlClient, 
+        postgresql_target_client: PostgreSqlClient,
         postgresql_logging_client: PostgreSqlClient
-    ):
+    ) -> None:
     pipeline_logging = PipelineLogging(
         pipeline_name=pipeline_name,
         log_folder_path=pipeline_config.get("config").get("log_folder_path"),
@@ -149,6 +211,11 @@ def run_raw_pipeline(
             postgresql_client=postgresql_client, 
             pipeline_logging=pipeline_logging
         )
+        serving_pipeline(
+            postgresql_client=postgresql_client, 
+            postgresql_target_client=postgresql_target_client,
+            pipeline_logging=pipeline_logging
+        )
         metadata_logger.log(
             status=MetaDataLoggingStatus.RUN_SUCCESS, logs=pipeline_logging.get_logs()
         )  # log end
@@ -164,31 +231,30 @@ def run_raw_pipeline(
 
 if __name__ == "__main__":
     env_vars = load_environment_variables()
-    fixer_api_client, market_stack_api_client, postgresql_client, postgresql_logging_client = setup_clients(env_vars)
+    fixer_api_client, market_stack_api_client, postgresql_client, postgresql_logging_client, postgresql_target_client = setup_clients(env_vars)
 
     # get config variables
     yaml_file_path = __file__.replace(".py", ".yaml")
     if Path(yaml_file_path).exists():
         with open(yaml_file_path) as yaml_file:
             pipeline_config = yaml.safe_load(yaml_file)
-            RAW_PIPELINE_NAME = pipeline_config.get("raw_pipeline_name")
-            SERVING_PIPELINE_NAME = pipeline_config.get("serving_pipeline_name")
+            PIPELINE_NAME = pipeline_config.get("pipeline_name")
     else:
         raise Exception(
             f"Missing {yaml_file_path} file! Please create the yaml file with at least a `name` key for the pipeline name."
         )
 
-    # set schedule
-    schedule.every(pipeline_config.get("schedule").get("run_seconds")).seconds.do(
-        run_raw_pipeline,
-        pipeline_name=RAW_PIPELINE_NAME,
+    # run pipelines
+    run_pipeline(
+        pipeline_name=PIPELINE_NAME,
         pipeline_config=pipeline_config,
         fixer_api_client=fixer_api_client,
         market_stack_api_client=market_stack_api_client,
         postgresql_client=postgresql_client,
+        postgresql_target_client=postgresql_target_client,
         postgresql_logging_client=postgresql_logging_client,
     )
 
-    while True:
-        schedule.run_pending()
-        time.sleep(pipeline_config.get("schedule").get("poll_seconds"))
+     
+
+
