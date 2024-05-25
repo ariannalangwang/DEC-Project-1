@@ -46,7 +46,7 @@ def transform_fixer_table(df_currency: pd.DataFrame) -> pd.DataFrame:
     Returns:
         pd.DataFrame: The transformed DataFrame.
     """
-    df_currency.drop(columns=['success', 'timestamp'], inplace=True)
+    df_currency.drop(columns=['success', 'timestamp', 'historical'], inplace=True)
     df_currency.columns = [col.replace('rates.', 'rate_').lower() for col in df_currency.columns]
     cols = df_currency.columns.tolist()
     cols[0], cols[1] = cols[1], cols[0]

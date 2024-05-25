@@ -11,7 +11,8 @@ select
     high,
     low,
     close,
-    volume
+    volume,
+    exchange
 from
     {{ config["source_table_name"] }}
 
