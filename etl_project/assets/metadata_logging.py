@@ -1,7 +1,7 @@
-from etl_project.connectors.postgresql import PostgreSqlClient
 from datetime import datetime, timezone
 from sqlalchemy import Table, Column, Integer, String, MetaData, JSON
 from sqlalchemy import insert, select, func
+from etl_project.connectors.postgresql import PostgreSqlClient
 
 
 class MetaDataLoggingStatus:
@@ -39,7 +39,7 @@ class MetaDataLogging:
 
     def _create_log_table(self) -> None:
         """Create log table if it does not exist."""
-        self.postgresql_client.create_table(metadata=self.metadata)
+        self.postgresql_client.create_all_tables(metadata=self.metadata)
 
     def _get_run_id(self):
         """Gets the next run id. Sets run id to 1 if no run id exists."""
@@ -57,12 +57,10 @@ class MetaDataLogging:
     def log(
         self,
         status: MetaDataLoggingStatus = MetaDataLoggingStatus.RUN_START,
-        timestamp: datetime = None,
+        timestamp: datetime = datetime.now(),
         logs: str = None,
     ) -> None:
         """Writes pipeline metadata log to a database"""
-        if timestamp is None:
-            timestamp = datetime.now()
         insert_statement = insert(self.table).values(
             pipeline_name=self.pipeline_name,
             timestamp=timestamp,
