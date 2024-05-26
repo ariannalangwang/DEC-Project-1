@@ -20,7 +20,7 @@ class FixerApiClient(BaseApiClient):
     
     def _get_date_range(self) -> list[str]:
         latest_date = self._get_latest_date()
-        date_range = pd.date_range(end=latest_date, periods=7).strftime("%Y-%m-%d").tolist()
+        date_range = pd.date_range(end=latest_date, periods=6).strftime("%Y-%m-%d").tolist()
         return date_range[::-1]
 
     def get_exchange_rates(self) -> list[dict]:
