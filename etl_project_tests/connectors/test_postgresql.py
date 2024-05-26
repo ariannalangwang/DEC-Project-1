@@ -1,8 +1,8 @@
-from etl_project.connectors.postgresql import PostgreSqlClient
 import pytest
 from dotenv import load_dotenv
 import os
 from sqlalchemy import Table, Column, Integer, String, MetaData
+from etl_project.connectors.postgresql import PostgreSqlClient
 
 
 @pytest.fixture
