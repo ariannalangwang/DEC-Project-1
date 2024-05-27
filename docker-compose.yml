@@ -24,7 +24,10 @@ services:
         condition: service_healthy
     env_file:
       - docker.env
+    volumes:
+      - etl_data:/app
      
 volumes:
-  project_1_postgres_data:
+  postgres_data:
+  etl_data:
    
