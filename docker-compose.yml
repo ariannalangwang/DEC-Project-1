@@ -30,4 +30,3 @@ services:
 volumes:
   postgres_data:
   etl_data:
-  
