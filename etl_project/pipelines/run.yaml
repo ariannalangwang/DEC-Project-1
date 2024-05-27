@@ -1,0 +1,3 @@
+pipeline_name: project_1_pipeline
+config:
+  log_folder_path: "./etl_project/logs"
