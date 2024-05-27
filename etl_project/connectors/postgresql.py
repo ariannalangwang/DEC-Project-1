@@ -34,6 +34,9 @@ class PostgreSqlClient:
         self.engine = create_engine(connection_url)
 
     def execute_sql(self, sql: str) -> None:
+        """
+        Executes the given SQL statement on the PostgreSQL database.
+        """
         self.engine.execute(sql)
 
     def select_all(self, table: Table) -> list[dict]:

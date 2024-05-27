@@ -38,12 +38,13 @@ class SqlExtractParser:
 
     def get_templated_sql(self, **kwargs) -> str:
         """
-        This method accepts the same arguments as the dict constructor: A dict, a dict subclass or some keyword arguments. If no arguments are given the context will be empty. These two calls do the same:
+        This method accepts the same arguments as the dict constructor: A dict, a dict subclass or some keyword arguments. 
+        If no arguments are given the context will be empty. These two calls do the same:
 
-                ```python
-                sql_extract_parser.get_templated_sql(knights='that say nih')
-                sql_extract_parser.get_templated_sql({'knights': 'that say nih'})
-                ```
+            ```python
+            sql_extract_parser.get_templated_sql(knights='that say nih')
+            sql_extract_parser.get_templated_sql({'knights': 'that say nih'})
+            ```
 
         This will return the rendered template as a string.
         """
@@ -107,6 +108,9 @@ class DatabaseTableExtractor:
             )
 
     def get_table_schema(self) -> tuple[Table, MetaData]:
+        """
+        Retrieves the schema of a table from the source PostgreSQL database.
+        """
         return self.source_postgresql_client.get_table_schema(
             table_name=self.sql_extract_parser.config.source_table_name
         )

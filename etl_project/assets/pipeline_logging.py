@@ -24,6 +24,10 @@ class PipelineLogging:
         logger.addHandler(stream_handler)
         self.logger = logger
 
+
     def get_logs(self) -> str:
+        """
+        Reads the contents of the log file and returns them as a string.
+        """
         with open(self.file_path, "r") as file:
             return "".join(file.readlines())

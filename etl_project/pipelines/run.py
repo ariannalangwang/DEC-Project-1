@@ -28,7 +28,10 @@ from etl_project.assets.etl_serving import (
 )
 
 
-def load_environment_variables():
+def load_environment_variables() -> dict:
+    """
+    Loads the required environment variables for the ETL pipeline.
+    """
     load_dotenv()
     required_env_vars = [
         'FIXER_ACCESS_KEY', 'MARKET_STACK_ACCESS_KEY', 
@@ -45,7 +48,10 @@ def load_environment_variables():
     return env_vars
 
 
-def setup_clients(env_vars):
+def setup_clients(env_vars) -> tuple:
+    """
+    Set up and initialize the required clients for the ETL pipeline.
+    """
     fixer_api_client = FixerApiClient(fixer_access_key=env_vars['FIXER_ACCESS_KEY'])
     market_stack_api_client = MarketStackApiClient(market_stack_access_key=env_vars['MARKET_STACK_ACCESS_KEY'])
 
@@ -81,7 +87,10 @@ def raw_pipeline(
         market_stack_api_client: MarketStackApiClient, 
         postgresql_client: PostgreSqlClient, 
         pipeline_logging: PipelineLogging
-    ):
+    ) -> None:
+    """
+    Executes the raw data pipeline.
+    """
     pipeline_logging.logger.info("Starting raw_pipeline")
 
     # extract
@@ -144,7 +153,10 @@ def serving_pipeline(
         postgresql_client: PostgreSqlClient, 
         postgresql_target_client: PostgreSqlClient,
         pipeline_logging: PipelineLogging
-    ):
+    ) -> None:
+    """
+    Executes the serving pipeline.
+    """
     pipeline_logging.logger.info("Starting serving_pipeline")
 
     # extract and load
@@ -194,6 +206,9 @@ def run_pipeline(
         postgresql_target_client: PostgreSqlClient,
         postgresql_logging_client: PostgreSqlClient
     ) -> None:
+    """
+    Runs the ETL pipeline.
+    """
     pipeline_logging = PipelineLogging(
         pipeline_name=pipeline_name,
         log_folder_path=pipeline_config.get("config").get("log_folder_path"),

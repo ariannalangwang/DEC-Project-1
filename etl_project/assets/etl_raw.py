@@ -55,6 +55,16 @@ def transform_fixer_table(df_currency: pd.DataFrame) -> pd.DataFrame:
 
 
 def transform_market_stack_table(df_stocks: pd.DataFrame) -> pd.DataFrame:
+    """
+    Transforms the market stack table by normalizing the data, removing unnecessary columns,
+    and formatting the date column.
+
+    Args:
+        df_stocks (pd.DataFrame): The input DataFrame containing the market stack table.
+
+    Returns:
+        pd.DataFrame: The transformed DataFrame with normalized data, removed columns, and formatted date.
+    """
     data_column = df_stocks['data']
     normalized_data = pd.json_normalize(data_column[0])
     normalized_data['symbol'] = [entry['symbol'] for entry in data_column[0]]

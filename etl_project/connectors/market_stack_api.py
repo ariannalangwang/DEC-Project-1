@@ -7,6 +7,12 @@ class MarketStackApiClient(BaseApiClient):
         super().__init__(market_stack_access_key)
 
     def get_stocks_info(self) -> dict:
+        """
+        Retrieves the end-of-day stock information for the specified symbols.
+
+        Returns:
+            A dictionary containing the stock information for the specified symbols.
+        """
         base_url = "http://api.marketstack.com/v1/eod"
         params = {
             "access_key": self.access_key,
