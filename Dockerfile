@@ -1,23 +1,16 @@
-FROM python:3.9-slim-bullseye
+FROM python:3.9
 
 WORKDIR /app
-
-COPY /app .
 
 COPY requirements.txt .
 
 RUN pip install --no-cache-dir -r requirements.txt
 
-ENV API_KEY=API_KEY
-ENV SERVER_NAME=SERVER_NAME
-ENV DATABASE_NAME=DATABASE_NAME
-ENV DB_USERNAME=DB_USERNAME
-ENV DB_PASSWORD=DB_PASSWORD
-ENV PORT=PORT
-ENV LOGGING_SERVER_NAME=LOGGING_SERVER_NAME
-ENV LOGGING_DATABASE_NAME=LOGGING_DATABASE_NAME
-ENV LOGGING_USERNAME=LOGGING_USERNAME
-ENV LOGGING_PASSWORD=LOGGING_PASSWORD
-ENV LOGGING_PORT=LOGGING_PORT
+# Copy the entire etl_project folder into the container
+COPY etl_project ./etl_project
 
-CMD ["python", "-m", "etl_project.pipelines.weather"]
+# Set the PYTHONPATH environment variable inside container to ensure correct imports
+# when the container is running, Python will use /app as part of its module search path
+ENV PYTHONPATH=/app
+
+CMD ["python", "-m", "etl_project.pipelines.run"]

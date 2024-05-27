@@ -131,6 +131,8 @@ celerybeat.pid
 
 # Environments
 .env
+docker.env
+aws.env
 .venv
 env/
 venv/
