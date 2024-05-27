@@ -269,7 +269,3 @@ if __name__ == "__main__":
         postgresql_target_client=postgresql_target_client,
         postgresql_logging_client=postgresql_logging_client,
     )
-
-     
-
-

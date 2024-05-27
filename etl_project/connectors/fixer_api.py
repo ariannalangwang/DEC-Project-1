@@ -55,6 +55,3 @@ class FixerApiClient(BaseApiClient):
             exchange_rates.append(response)
 
         return exchange_rates
-
-     
-

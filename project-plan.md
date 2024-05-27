@@ -33,5 +33,3 @@ What datasets are you sourcing from? How frequently are the source datasets upda
 ## Solution architecture
 
 ![project_plan_image.png](project_plan_image.png)
-
- 
