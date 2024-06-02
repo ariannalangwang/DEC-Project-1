@@ -1,0 +1,32 @@
+services:
+  postgres_14_container:
+    image: postgres:14
+    container_name: postgres_14_container
+    env_file:
+      - docker.env
+    ports:
+      - 5433:5432
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./create_dblink.sql:/docker-entrypoint-initdb.d/create_dblink.sql
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  project_1_etl_container:
+    image: project_1_etl:1.0.0
+    container_name: project_1_etl_container
+    depends_on:
+      postgres_14_container:
+        condition: service_healthy
+    env_file:
+      - docker.env
+    volumes:
+      - etl_data:/app
+     
+volumes:
+  postgres_data:
+  etl_data:
