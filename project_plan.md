@@ -1,63 +1,75 @@
-# Project plan
+# Project 1 - Stock Master : Know stocks in your local currency    
 
-## Objective
+## Project Context and Goals
 
-A short statement about the objective of your project.
+## Project Goal
 
-Example:
+The aim of this project was to establish a comprehensive pipeline for extracting data from a live dataset that is constantly updating, and then loading it into a relational database to simulate a real-life data warehouse. The pipeline would encompass data transformations before loading (ETL) and after loading (ELT) to replicate potential data manipulation requirements for real-time applications.
 
-> The objective of our project is to provide analytical datasets from our Market Stack API and Fixer for currency exchange.
+The data must be formatted in a user-friendly manner to facilitate prompt engagement by data analysts (DA) and data scientists (DS) without necessitating substantial time allocation to data manipulations. This entails loading the data into distinct tables that can be seamlessly merged, featuring clear and intuitive column names and appropriate data types for each individual record.
+
+
+## Business Objective
+
+The primary objective of our project is to curate analytical datasets by leveraging the Market Stack API and Fixer API. These datasets will encompass a comprehensive range of stock data, including stock opening, high, low, closing, and volume metrics. Furthermore, we intend to amalgamate exchange data from the API to furnish investors with stock prices denominated in their respective local currencies.
+
 
 ## Consumers
 
-What users would find your data useful? How do they want to access the data?
-
-Example:
-
-> The users of our datasets are Traders from around the world to find stock prices and home currency estimator for the traders.
+Our data caters to the needs of local small investors and analysts from Australia, China, and India, enabling them to easily access stock prices in their local currency. It offers real-time information on stocks across global stock exchanges. Users can seamlessly retrieve data through SQL queries and custom SQL views from the database, and leverage it to create visually engaging dashboards featuring maps and key performance metrics.
 
 ## Questions
 
-What questions are you trying to answer with your data? How will your data support your users?
+What questions are you trying to answer with your data? How will data support our local small traders?
 
 Example:
 
-> - What is the price of a stock?
-> - What is the home currency of the stock?
+> - What is the price of a stock today or historically?
+> - What is the price of stock in Austrialian dollar, Chinese Yuan or Indian rupees?
+> - What is the average closing price of the stock in USD, Euro, Yuan, austrailain dollar or indian rupees?
 
 
 ## Source datasets
 
 What datasets are you sourcing from? How frequently are the source datasets updating?
 
-Example:
+- **Market Stack API**: MarketStack is a powerful API that provides real-time, intraday, and historical market data for global stock markets. It's widely used for accessing up-to-date stock price information in various formats.
 
-| Source name | Source type | Source documentation |
-| - | - | - |
-| Customers database | PostgreSQL database | - |
-| Market Stack  | REST API | - |
-| Fixer API
+- **Fixer API**: Fixer API is a popular service that provides real-time and historical exchange rate data for a wide range of currencies. It’s widely used for currency conversion applications.
+
+- **Postgress**: Progress is used for storing store data from API, transformation of data and loading the results for traders to acess using SQL. Analyst can use the SQL to build a report/dashboard for analysis. 
+
+**Table of contents for source data**
+
+| Source name | Source type | Refresh Cadence | Link |
+| - | - | - |- |
+| Trader database | PostgreSQL database | Daily | - |
+| Market Stack  | REST API | Daily | https://marketstack.com/ |
+| Fixer API  | REST API | Hourly | https://fixer.io/ |
 
 ## Solution architecture
 
-How are we going to get data flowing from source to serving? What components and services will we combine to implement the solution? How do we automate the entire running of the solution?
+Below is the solution architecture description and diagram
 
-- What data extraction patterns are you going to be using?
-- What data loading patterns are you going to be using?
-- What data transformation patterns are you going to be performing?
+![images/system_design_dummy](images/project_plan_image.png)
 
-We recommend using a diagramming tool like [draw.io](https://draw.io/) to create your architecture diagram.
 
-Here is a sample solution architecture diagram:
+- **Python** was used for:
+  - Extracting the Stock and Exhange rates, via an API.
+  - Data Transformation
+  - Load data to our postgres database.
 
-![images/sample-solution-architecture-diagram.png](images/sample-solution-architecture-diagram.png)
+- **PostgreSQL DBMS** was used for:
+  - Storing all our data for traders
 
-## Breakdown of tasks
+- **AWS RDS** was used for:
+  - Hosting and managing our postgres database.
 
-How is your project broken down? Who is doing what?
+- **SQL** was used for:
+  - Creating views off of the data that is loaded
 
-We recommend using a free Task board such as [Trello](https://trello.com/). This makes it easy to assign and track tasks to each individual.
-
-Example:
-
-![images/kanban-task-board.png](images/kanban-task-board.png)
+- Other programs used:
+  - **Docker** was used to containerize our pipeline
+  - **ECR** was used to host our docker container
+  - **ECS** was used to run the docker container
+  - **S3** was used to store the `.env` file.
