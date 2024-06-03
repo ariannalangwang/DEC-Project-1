@@ -49,8 +49,27 @@ What datasets are you sourcing from? How frequently are the source datasets upda
 
 ## Solution architecture
 
-Here is a dummy  solution architecture diagram (Ari will push the final arhcitecture)
+Below is the solution architecture description and diagram
 
-![images/system_design_dummy](images/system_design_dummy.png)
+![images/system_design_dummy](images/project_plan_image.png)
 
-We recommend using a diagramming tool like [draw.io](https://draw.io/) to create your architecture diagram.
+
+- **Python** was used for:
+  - Extracting the Stock and Exhange rates, via an API.
+  - Data Transformation
+  - Load data to our postgres database.
+
+- **PostgreSQL DBMS** was used for:
+  - Storing all our data for traders
+
+- **AWS RDS** was used for:
+  - Hosting and managing our postgres database.
+
+- **SQL** was used for:
+  - Creating views off of the data that is loaded
+
+- Other programs used:
+  - **Docker** was used to containerize our pipeline
+  - **ECR** was used to host our docker container
+  - **ECS** was used to run the docker container
+  - **S3** was used to store the `.env` file.
