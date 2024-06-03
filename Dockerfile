@@ -10,7 +10,7 @@ RUN pip install --no-cache-dir -r requirements.txt
 COPY etl_project ./etl_project
 
 # Set the PYTHONPATH environment variable inside container to ensure correct imports
-# when the container is running, Python will use /app as part of its module search path
+# When the container is running, Python will use /app as part of its module search path
 ENV PYTHONPATH=/app
 
 CMD ["python", "-m", "etl_project.pipelines.run"]
